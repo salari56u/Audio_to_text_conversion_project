@@ -6,6 +6,11 @@ import 'package:speech_to_text/speech_recognition_error.dart';
 import 'package:speech_to_text/speech_recognition_result.dart';
 import 'package:speech_to_text/speech_to_text.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:untitled1/widget/control_widget.dart';
+import 'package:untitled1/widget/header_error_widget.dart';
+import 'package:untitled1/widget/init_speech_widget.dart';
+import 'package:untitled1/widget/result_widget.dart';
+import 'package:untitled1/widget/secction_option_widget.dart';
 
 void main() => runApp(const SpeechSampleApp());
 
@@ -230,89 +235,6 @@ class _SpeechSampleAppState extends State<SpeechSampleApp> {
     });
   }
 }
-
-// Other widget classes remain unchanged (RecognitionResultsWidget, HeaderWidget, etc.)
-class RecognitionResultsWidget extends StatelessWidget {
-  const RecognitionResultsWidget({
-    Key? key,
-    required this.lastWords,
-    required this.level,
-  }) : super(key: key);
-
-  final String lastWords;
-  final double level;
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: <Widget>[
-        const Center(
-          child: Text(
-            'Recognized Words',
-            style: TextStyle(fontSize: 22.0),
-          ),
-        ),
-        Expanded(
-          child: Stack(
-            children: <Widget>[
-              Container(
-                color: Theme.of(context).secondaryHeaderColor,
-                child: Center(
-                  child: Text(
-                    lastWords,
-                    textAlign: TextAlign.center,
-                  ),
-                ),
-              ),
-              Positioned.fill(
-                bottom: 10,
-                child: Align(
-                  alignment: Alignment.bottomCenter,
-                  child: Container(
-                    width: 40,
-                    height: 40,
-                    alignment: Alignment.center,
-                    decoration: BoxDecoration(
-                      boxShadow: [
-                        BoxShadow(
-                            blurRadius: .26,
-                            spreadRadius: level * 1.5,
-                            color: Colors.black.withOpacity(.05))
-                      ],
-                      color: Colors.white,
-                      borderRadius: const BorderRadius.all(Radius.circular(50)),
-                    ),
-                    child: IconButton(
-                      icon: const Icon(Icons.mic),
-                      onPressed: () {},
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-      ],
-    );
-  }
-}
-
-class HeaderWidget extends StatelessWidget {
-  const HeaderWidget({
-    Key? key,
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return const Center(
-      child: Text(
-        'Speech recognition available',
-        style: TextStyle(fontSize: 22.0),
-      ),
-    );
-  }
-}
-
 class ErrorWidget extends StatelessWidget {
   const ErrorWidget({
     Key? key,
@@ -339,174 +261,8 @@ class ErrorWidget extends StatelessWidget {
   }
 }
 
-class SpeechControlWidget extends StatelessWidget {
-  const SpeechControlWidget(this.hasSpeech, this.isListening,
-      this.startListening, this.stopListening, this.cancelListening,
-      {Key? key})
-      : super(key: key);
-
-  final bool hasSpeech;
-  final bool isListening;
-  final void Function() startListening;
-  final void Function() stopListening;
-  final void Function() cancelListening;
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceAround,
-      children: <Widget>[
-        TextButton(
-          onPressed: !hasSpeech || isListening ? null : startListening,
-          child: const Text('Start'),
-        ),
-        TextButton(
-          onPressed: isListening ? stopListening : null,
-          child: const Text('Stop'),
-        ),
-        TextButton(
-          onPressed: isListening ? cancelListening : null,
-          child: const Text('Cancel'),
-        )
-      ],
-    );
-  }
-}
-
-class SessionOptionsWidget extends StatelessWidget {
-  const SessionOptionsWidget(
-      this.currentLocaleId,
-      this.switchLang,
-      this.localeNames,
-      this.logEvents,
-      this.switchLogging,
-      this.pauseForController,
-      this.listenForController,
-      this.onDevice,
-      this.switchOnDevice,
-      {Key? key})
-      : super(key: key);
-
-  final String currentLocaleId;
-  final void Function(String?) switchLang;
-  final void Function(bool?) switchLogging;
-  final void Function(bool?) switchOnDevice;
-  final TextEditingController pauseForController;
-  final TextEditingController listenForController;
-  final List<LocaleName> localeNames;
-  final bool logEvents;
-  final bool onDevice;
 
 
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: <Widget>[
-          Row(
-            children: [
-              const Text('Language: '),
-              DropdownButton<String>(
-                onChanged: (selectedVal) => switchLang(selectedVal),
-                value: currentLocaleId,
-                items: localeNames
-                    .map(
-                      (localeName) => DropdownMenuItem(
-                    value: localeName.localeId,
-                    child: Text(localeName.name),
-                  ),
-                )
-                    .toList(),
-              ),
-            ],
-          ),
-          Row(
-            children: [
-              const Text('pauseFor: '),
-              Container(
-                  padding: const EdgeInsets.only(left: 8),
-                  width: 80,
-                  child: TextFormField(
-                    controller: pauseForController,
-                  )),
-              Container(
-                  padding: const EdgeInsets.only(left: 16),
-                  child: const Text('listenFor: ')),
-              Container(
-                  padding: const EdgeInsets.only(left: 8),
-                  width: 80,
-                  child: TextFormField(
-                    controller: listenForController,
-                  )),
-            ],
-          ),
-          Row(
-            children: [
-              const Text('On device: '),
-              Checkbox(
-                value: onDevice,
-                onChanged: switchOnDevice,
-              ),
-              const Text('Log events: '),
-              Checkbox(
-                value: logEvents,
-                onChanged: switchLogging,
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-}
 
-class InitSpeechWidget extends StatelessWidget {
-  const InitSpeechWidget(this.hasSpeech, this.initSpeechState, {Key? key})
-      : super(key: key);
 
-  final bool hasSpeech;
-  final Future<void> Function() initSpeechState;
 
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceAround,
-      children: <Widget>[
-        TextButton(
-          onPressed: hasSpeech ? null : initSpeechState,
-          child: const Text('Initialize'),
-        ),
-      ],
-    );
-  }
-}
-
-class SpeechStatusWidget extends StatelessWidget {
-  const SpeechStatusWidget({
-    Key? key,
-    required this.speech,
-  }) : super(key: key);
-
-  final SpeechToText speech;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(vertical: 20),
-      color: Theme.of(context).colorScheme.surface,
-      child: Center(
-        child: speech.isListening
-            ? const Text(
-          "I'm listening...",
-          style: TextStyle(fontWeight: FontWeight.bold),
-        )
-            : const Text(
-          'Not listening',
-          style: TextStyle(fontWeight: FontWeight.bold),
-        ),
-      ),
-    );
-  }
-}
